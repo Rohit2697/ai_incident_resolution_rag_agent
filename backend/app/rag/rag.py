@@ -31,6 +31,8 @@ class Rag:
     # filePath=Path(__file__).parent/"sample.pdf"
     loader=PyPDFLoader(file_path=file_path)
     docs=loader.load()
+    for doc in docs:
+      doc.metadata.update({"source": file_path.name})
     text_splitter=RecursiveCharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
     texts=text_splitter.split_documents(docs)
     return texts

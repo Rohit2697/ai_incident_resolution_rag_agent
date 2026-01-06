@@ -1,9 +1,10 @@
 def build_context(docs):
     return "\n---\n".join(
         f"[Source: {doc.metadata.get('source', '').split('\\\\')[-1]} | "
-        f"Page {doc.metadata.get('page_label') or doc.metadata.get('page')}]\n"
+        f"Page {doc.metadata.get('page_label') or doc.metadata.get('page')} | "
+        f"Score: {score:.2f}]\n"
         f"{doc.page_content.strip()}"
-        for doc in docs
+        for doc, score in docs
     )
 
 
