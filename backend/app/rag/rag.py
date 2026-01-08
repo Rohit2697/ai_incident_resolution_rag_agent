@@ -1,11 +1,11 @@
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from pathlib import Path
 from langchain_openai import OpenAIEmbeddings
 from dotenv import load_dotenv
 from langchain_qdrant import QdrantVectorStore
 from openai import OpenAI
-from app.rag.utils.utils import build_context,return_Rag_System_prompt
+from app.rag.utils.utils import build_context,return_Rag_System_prompt,build_memory_context
+from app.memory.user_memory import memory as user_memory
 load_dotenv()
 
 class Rag:
@@ -49,7 +49,12 @@ class Rag:
     return {"status": "success","chunks_indexed": len(texts)}
     
 
-  def retrieve(self,user_query,collection_name):
+  def retrieve(self,user_query,collection_name,userId:str):
+
+    memory_result=user_memory.search(query=user_query,user_id=userId)
+
+    memory_context=build_memory_context(memory_result)
+
     vector_db=QdrantVectorStore.from_existing_collection(
       url=self.vector_url,
       embedding=self.embedding,
@@ -63,7 +68,7 @@ class Rag:
         }
 
     context=build_context(search_result)
-    system_prompt=return_Rag_System_prompt(context)
+    system_prompt=return_Rag_System_prompt(context,memory_context)
     response=self.openAI_client.responses.create(
       model=self.chat_model,
       input=[
@@ -75,6 +80,12 @@ class Rag:
         }
       ]
     )
+    ai_response=response.output_text
+  
+    user_memory.add([
+      {"role":"user","content":user_query},
+      {"role":"assistant","content":ai_response}
+    ],user_id=userId)
     return {
       "response_from":"Rag_AI_Agent",
       "response":response.output_text

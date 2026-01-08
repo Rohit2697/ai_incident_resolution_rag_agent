@@ -9,7 +9,7 @@ router=APIRouter()
 
 @router.post("/chat")
 def chat(chat_body:ChatRequest):
-  job=queue.enqueue(chat_worker,chat_body.query,chat_body.collection_name, retry=Retry(max=3,interval=[10,30,60]))
+  job=queue.enqueue(chat_worker,chat_body.query,chat_body.collection_name,chat_body.userId, retry=Retry(max=3,interval=[10,30,60]))
   return {
         "message": "chat initiated",
         "job_id": job.id

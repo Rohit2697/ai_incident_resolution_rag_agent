@@ -6,9 +6,13 @@ def build_context(docs):
         f"{doc.page_content.strip()}"
         for doc, score in docs
     )
+def build_memory_context(memory_result):
+    memory_context=""
+    if memory_result["results"] :
+      memory_context="".join([f"{memObj["memory"]}\n" for memObj in memory_result["results"]])
+    return memory_context
 
-
-def return_Rag_System_prompt(context):
+def return_Rag_System_prompt(context,memory_context):
     return f"""
     You are an AI assistant helping users query a PDF-based knowledge system.
 
@@ -18,7 +22,7 @@ def return_Rag_System_prompt(context):
     - The corresponding page number
 
     Your responsibilities:
-    1. Answer the user's question using ONLY the provided context.
+    1. Answer the user's question using ONLY the provided context and memory.
     2. If the answer is found, clearly explain it in simple and concise language.
     3. Always mention the relevant page number(s) where the information appears.
     4. Guide the user to continue reading from the same page in the PDF if they want more detail.
@@ -30,6 +34,9 @@ def return_Rag_System_prompt(context):
     - Invent information
     - Use external knowledge
     - Guess page numbers
+
+    Memory:
+    {memory_context}
 
     Context:
     {context}

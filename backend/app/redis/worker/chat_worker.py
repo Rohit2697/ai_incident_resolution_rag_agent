@@ -2,11 +2,13 @@ from app.rag.rag import Rag
 from fastapi import HTTPException
 from qdrant_client.http.exceptions import UnexpectedResponse
 
+
 rag=Rag(vector_url="http://localhost:6333")
 
-def chat_worker(query:str,collection_name:str):
+
+def chat_worker(query:str,collection_name:str,userId):
     try:
-        result=rag.retrieve(user_query=query,collection_name=collection_name)
+        result=rag.retrieve(user_query=query,collection_name=collection_name,userId=userId)
         return result
     except UnexpectedResponse:
         raise HTTPException(

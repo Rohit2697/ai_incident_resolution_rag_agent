@@ -1,6 +1,7 @@
 from pydantic import Field,BaseModel
 
 class ChatRequest(BaseModel):
-  query:str=Field(...,example="tell me about timeout error?")
-  collection_name:str=Field(...,example="incidents")
+  query:str=Field(...,example="I am getting memory leak error in nodejs")
+  collection_name:str=Field(...,example="nodejs")
+  userId:str=Field(...,example="test@gmail.com")
 
