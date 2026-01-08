@@ -1,7 +1,10 @@
 from fastapi import APIRouter, UploadFile,File,Form,HTTPException
 from pathlib import Path
+from rq import Retry
+from app.redis.worker.upload_docs_worker import upload_docs_worker_job
+from app.redis.cleint.client import queue
 import shutil
-from rag.rag import Rag
+from app.rag.rag import Rag
 import uuid
 
 router=APIRouter()
@@ -26,14 +29,8 @@ def upload_document(
 
   with open(file_path,"wb") as buffer:
     shutil.copyfileobj(file.file,buffer)
-  
-  rag=Rag(vector_url="http://localhost:6333")
-  
-  chunks=rag.extract(file_path,chunk_size,chunk_overlap)
-  result=rag.store(chunks,collection_name)
+  job=queue.enqueue(upload_docs_worker_job,file.filename,collection_name,file_path,chunk_size,chunk_overlap,retry=Retry(max=3,interval=[10,30,60]))
   return {
-        "message": "Document indexed successfully",
-        "file_name": file.filename,
-        "collection": collection_name,
-        "chunks_indexed": result["chunks_indexed"]
-    }
+    "message": "File upload initiated",
+    "job_id": job.id
+  }

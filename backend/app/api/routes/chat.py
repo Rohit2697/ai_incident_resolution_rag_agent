@@ -1,19 +1,16 @@
-from api.schema.chatRequest import ChatRequest
-from fastapi import APIRouter,HTTPException
-from qdrant_client.http.exceptions import UnexpectedResponse
-from rag.rag import Rag
+from app.api.schema.chatRequest import ChatRequest
+from fastapi import APIRouter
+from app.redis.worker.chat_worker import chat_worker
+from app.redis.cleint.client import queue
+from rq import Retry
 router=APIRouter()
 
-rag=Rag(vector_url="http://localhost:6333")
+
 
 @router.post("/chat")
 def chat(chat_body:ChatRequest):
-  try:
-    result=rag.retrieve(user_query=chat_body.query,collection_name=chat_body.collection_name)
-    return result
-  
-  except UnexpectedResponse:
-    raise HTTPException(
-      status_code=400,
-        detail="No documents indexed yet for this collection. Please upload documents first."
-    )
+  job=queue.enqueue(chat_worker,chat_body.query,chat_body.collection_name, retry=Retry(max=3,interval=[10,30,60]))
+  return {
+        "message": "chat initiated",
+        "job_id": job.id
+    }

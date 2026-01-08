@@ -5,7 +5,7 @@ from langchain_openai import OpenAIEmbeddings
 from dotenv import load_dotenv
 from langchain_qdrant import QdrantVectorStore
 from openai import OpenAI
-from rag.utils.utils import build_context,return_Rag_System_prompt
+from app.rag.utils.utils import build_context,return_Rag_System_prompt
 load_dotenv()
 
 class Rag:
