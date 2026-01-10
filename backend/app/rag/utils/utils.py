@@ -1,3 +1,5 @@
+from app.db.mongo import chat_collection
+from datetime import datetime
 def build_context(docs):
     return "\n---\n".join(
         f"[Source: {doc.metadata.get('source', '').split('\\\\')[-1]} | "
@@ -42,3 +44,44 @@ def return_Rag_System_prompt(context,memory_context):
     {context}
 
     """
+
+
+
+async def save_chat_messages(user_id:str, collection_name:str, role:str,content:str):
+     await chat_collection.update_one(
+         {
+             "userId":user_id,
+             "collection_name":collection_name
+         },
+         {
+             "$push":{
+                    "messages": {
+                    "role": role,
+                    "content": content,
+                    "timestamp": datetime.utcnow()
+                }
+             },
+             "$set":{
+                 "updated_at":datetime.utcnow()
+             },
+             "$setOnInsert":{
+                 "created_at":datetime.utcnow()
+             }
+         },
+         upsert=True
+     ) 
+
+
+async def get_chat_history(userId:str,collection_name:str):
+    doc=await chat_collection.find_one(
+        {
+            "userId":userId,
+            "collection_name":collection_name
+        },
+        {"_id":0}
+    )
+    return doc["messages"] if doc else []
+
+
+
+

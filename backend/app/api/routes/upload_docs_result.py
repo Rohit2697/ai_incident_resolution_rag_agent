@@ -3,7 +3,7 @@ from fastapi import APIRouter
 
 router=APIRouter()
 
-@router.get('/upload-docs-result/{job_id}')
+@router.get('/upload-docs-worker-result/{job_id}')
 def get_upload_docs_result(job_id: str):
     job = queue.fetch_job(job_id)
     if job is None:

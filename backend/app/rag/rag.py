@@ -87,7 +87,7 @@ class Rag:
       {"role":"assistant","content":ai_response}
     ],user_id=userId)
     return {
-      "response_from":"Rag_AI_Agent",
+      "response_from":"assistant",
       "response":response.output_text
     }
 

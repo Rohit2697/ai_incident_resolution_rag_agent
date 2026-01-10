@@ -1,9 +1,11 @@
-from app.api.schema.chatRequest import ChatRequest
+from app.api.schema.chat import ChatRequest
 from fastapi import APIRouter
 from app.redis.worker.chat_worker import chat_worker
 from app.redis.cleint.client import queue
 from rq import Retry
 router=APIRouter()
+
+#save chats
 
 
 

@@ -4,7 +4,7 @@ from rq import Retry
 from app.redis.worker.upload_docs_worker import upload_docs_worker_job
 from app.redis.cleint.client import queue
 import shutil
-from app.rag.rag import Rag
+from app.rag.client import client
 import uuid
 
 router=APIRouter()
@@ -23,7 +23,9 @@ def upload_document(
 ):
   if not file.filename.endswith(".pdf"):
     raise HTTPException(status_code=400,detail="Only PDF file type allowed")
-  
+  if client.collection_exists(collection_name):
+    raise HTTPException(status_code=400,detail="Collection already exists")
+   
   file_id=f"{uuid.uuid4()}.pdf"
   file_path=UPLOAD_DIR/file_id
 

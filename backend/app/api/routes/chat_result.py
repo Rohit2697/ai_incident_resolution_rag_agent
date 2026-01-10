@@ -3,7 +3,7 @@ from app.redis.cleint.client import queue
 
 router=APIRouter()
 
-@router.get('/chat-result/{job_id}')
+@router.get('/chat-worker-result/{job_id}')
 def chat_result(job_id:str):
     job=queue.fetch_job(job_id)
     if job is None:

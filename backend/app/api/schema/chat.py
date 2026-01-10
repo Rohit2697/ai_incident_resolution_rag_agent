@@ -5,3 +5,6 @@ class ChatRequest(BaseModel):
   collection_name:str=Field(...,example="nodejs")
   userId:str=Field(...,example="test@gmail.com")
 
+class ChatResponse(BaseModel):
+   response_from: str
+   response: str
