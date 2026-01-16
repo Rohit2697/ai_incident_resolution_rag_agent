@@ -6,6 +6,8 @@ from app.api.routes.upload_docs_result import router as upload_docs_result_route
 from app.api.routes.chat_result import router as chat_result_router
 from app.api.routes.get_all_collection import router as get_collections
 from app.api.routes.chat_history import router as get_chat_history
+from app.api.routes.get_all_collection_result import router as get_collections_result
+
 api_router=APIRouter()
 
 api_router.include_router(upload_router,prefix="",tags=["Documents"])
@@ -14,3 +16,4 @@ api_router.include_router(upload_docs_result_router,prefix="",tags=["Upload Docs
 api_router.include_router(chat_result_router,prefix="",tags=["Chat Result"])
 api_router.include_router(get_collections,prefix="",tags=["Get all collections"])
 api_router.include_router(get_chat_history,prefix="",tags=["Get chat history"])
+api_router.include_router(get_collections_result,prefix="",tags=["Get all collections result"])

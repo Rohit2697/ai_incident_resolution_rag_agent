@@ -2,17 +2,18 @@ from app.db.mongo import chat_collection
 from datetime import datetime
 def build_context(docs):
     return "\n---\n".join(
-        f"[Source: {doc.metadata.get('source', '').split('\\\\')[-1]} | "
-        f"Page {doc.metadata.get('page_label') or doc.metadata.get('page')} | "
-        f"Score: {score:.2f}]\n"
+        f"[Source: {doc_source} | Page {doc.metadata.get('page_label') or doc.metadata.get('page')} | Score: {score:.2f}]\n"
         f"{doc.page_content.strip()}"
         for doc, score in docs
+        for doc_source in [doc.metadata.get('source', '').split('\\')[-1]]  # <-- move split here
     )
+
 def build_memory_context(memory_result):
-    memory_context=""
-    if memory_result["results"] :
-      memory_context="".join([f"{memObj["memory"]}\n" for memObj in memory_result["results"]])
+    memory_context = ""
+    if memory_result["results"]:
+        memory_context = "".join([f"{memObj['memory']}\n" for memObj in memory_result["results"]])
     return memory_context
+
 
 def return_Rag_System_prompt(context,memory_context):
     return f"""
@@ -47,8 +48,9 @@ def return_Rag_System_prompt(context,memory_context):
 
 
 
-async def save_chat_messages(user_id:str, collection_name:str, role:str,content:str):
-     await chat_collection.update_one(
+def save_chat_messages(user_id:str, collection_name:str, role:str,content:str):
+    try:
+      chat_collection.update_one(
          {
              "userId":user_id,
              "collection_name":collection_name
@@ -70,17 +72,48 @@ async def save_chat_messages(user_id:str, collection_name:str, role:str,content:
          },
          upsert=True
      ) 
+      return {
+          "error":False,
+          "message":"chat Saved into DB",
+          "data":None
+      }
+    except Exception as e:
+       return {
+           "error":True,
+           "message":f"Unable to save chat into DB : {str(e)}",
+           "data":None
+           }
 
 
-async def get_chat_history(userId:str,collection_name:str):
-    doc=await chat_collection.find_one(
-        {
-            "userId":userId,
-            "collection_name":collection_name
-        },
-        {"_id":0}
-    )
-    return doc["messages"] if doc else []
+def get_chat_history(userId:str,collection_name:str):
+    try:
+       
+        doc=chat_collection.find_one(
+            {
+                "userId":userId,
+                "collection_name":collection_name
+            },
+            {"_id":0}
+        )
+        if doc:
+            {
+          "error":False,
+          "message":"chat retrieved from DB",
+          "data":doc["messages"]
+        }
+        return  {
+          "error":False,
+          "message":"No chat history found",
+          "data":[]
+        }
+    except Exception as e:
+         return  {
+          "error":True,
+          "message":f"Unable to retrieved chat from DB : {str(e)}",
+          "data": []
+        }
+
+
 
 
 

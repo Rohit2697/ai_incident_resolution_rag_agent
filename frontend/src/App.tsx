@@ -13,7 +13,7 @@ function App() {
   const [menuOpen, setMenuOpen] = useState(true);
   const [refreshSideBar, setRefreshSideBar] = useState(true);
   const [collections, setCollections] = useState<string[]>([]);
-
+  const user='admin'
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <div className="h-screen overflow-hidden flex flex-col">
@@ -25,6 +25,7 @@ function App() {
           {/* Sidebar */}
           {menuOpen && (
             <Sidebar
+            user={user}
             collections={collections}
             setCollections={setCollections}
               refreshSideBar={refreshSideBar}
@@ -35,7 +36,7 @@ function App() {
           {/* Main area */}
           <main className="flex-1 overflow-hidden">
             <Routes>
-              <Route path="/" element={<UploadDocumentPage />} />
+              <Route path="/" element={<UploadDocumentPage setRefreshSideBar={setRefreshSideBar} user={user} />} />
               <Route path="/chat" element={<ChatPage />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>

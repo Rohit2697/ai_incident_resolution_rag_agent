@@ -1,13 +1,14 @@
 import UploadDocumentForm from "@/components/upload-document-form";
+import type { Dispatch, SetStateAction } from "react";
 
 
 
-// type UploadDocumentProps = {
-  
-//   setShowUpload: Dispatch<SetStateAction<boolean>>;
-// };
+type UploadDocumentProps = {
+  user: string;
+  setRefreshSideBar: Dispatch<SetStateAction<boolean>>;
+};
 
-export function UploadDocument() {
+export function UploadDocument({user, setRefreshSideBar}: UploadDocumentProps) {
   return (
     <div className="space-y-6">
       <div className="text-center">
@@ -17,7 +18,7 @@ export function UploadDocument() {
         </p>
       </div>
 
-      <UploadDocumentForm />
+      <UploadDocumentForm setRefreshSideBar={setRefreshSideBar} user={user} />
     </div>
   );
 }

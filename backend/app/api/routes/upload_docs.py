@@ -4,8 +4,6 @@ from rq import Retry
 from app.redis.worker.upload_docs_worker import upload_docs_worker_job
 from app.redis.cleint.client import queue
 import shutil
-from app.rag.client import client
-from app.db.mongo import collections
 import uuid
 
 router=APIRouter()
@@ -25,11 +23,8 @@ def upload_document(
 ):
   if not file.filename.endswith(".pdf"):
     raise HTTPException(status_code=400,detail="Only PDF file type allowed")
-  if collections.find_one({ "userId": userId,"collection_name": collection_name, "status": "indexed"}, {"_id":0}):  
-    raise HTTPException(status_code=400,detail="Collection already exists")
   file_id=f"{uuid.uuid4()}.pdf"
   file_path=UPLOAD_DIR/file_id
-
   with open(file_path,"wb") as buffer:
     shutil.copyfileobj(file.file,buffer)
   job=queue.enqueue(upload_docs_worker_job,userId,file.filename,collection_name,file_path,chunk_size,chunk_overlap,retry=Retry(max=3,interval=[10,30,60]))

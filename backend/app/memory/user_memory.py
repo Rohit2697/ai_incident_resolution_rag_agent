@@ -1,13 +1,11 @@
-import os
 from mem0 import Memory
-from dotenv import load_dotenv
+from app.environment.environment import env_veriables
 
-load_dotenv()
 config={
     "llm": {
         "provider": "openai",
         "config": {
-            "api_key":os.environ.get("OPENAI_API_KEY"),
+            "api_key": env_veriables["OPENAI"]["api_key"],
             "model":"gpt-4.1-mini",
         }
     },
@@ -15,8 +13,8 @@ config={
         "provider": "qdrant",
         "config": {
             "collection_name": "user_memory",
-            "host": "localhost",
-            "port": 6333,
+            "url": env_veriables["QDRANT"]["url"],
+            "api_key": env_veriables["QDRANT"]["api_key"]
         }
     }
 }

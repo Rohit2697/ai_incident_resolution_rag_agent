@@ -6,27 +6,19 @@ from langchain_qdrant import QdrantVectorStore
 from openai import OpenAI
 from app.rag.utils.utils import build_context,return_Rag_System_prompt,build_memory_context
 from app.memory.user_memory import memory as user_memory
+from app.environment.environment import env_veriables
 load_dotenv()
 
 class Rag:
 
   def __init__(self,
                embedding_model="text-embedding-3-small",
-               chat_model="gpt-4.1-mini",
-               vector_url=None):
-    
+               chat_model="gpt-4.1-mini"):
     self.embedding=OpenAIEmbeddings(model=embedding_model)
     self.openAI_client=OpenAI()
     self.chat_model=chat_model
-    self.vector_url=vector_url
-    # self.vector_db=None
-    # if vector_url and collection_name:
-    #   self.vector_db=QdrantVectorStore.from_existing_collection(
-    #     url=vector_url,
-    #     collection_name=collection_name,
-    #     embedding=self.embedding
-    #   )
-
+    self.qdrant_url=env_veriables["QDRANT"]["url"]
+    self.qdrant_api_key=env_veriables["QDRANT"]["api_key"]
   def extract(self,file_path,chunk_size,chunk_overlap):
     # filePath=Path(__file__).parent/"sample.pdf"
     loader=PyPDFLoader(file_path=file_path)
@@ -39,9 +31,10 @@ class Rag:
   
   def store(self,texts,collection_name):
     QdrantVectorStore.from_documents(
+      url=self.qdrant_url, 
+      api_key=self.qdrant_api_key,
       documents=texts,
       embedding=self.embedding,
-      url=self.vector_url,
       collection_name=collection_name
       
       
@@ -56,14 +49,16 @@ class Rag:
     memory_context=build_memory_context(memory_result)
 
     vector_db=QdrantVectorStore.from_existing_collection(
-      url=self.vector_url,
+      url=self.qdrant_url, 
+      api_key=self.qdrant_api_key,
       embedding=self.embedding,
       collection_name=collection_name
+      
     )
     search_result=vector_db.similarity_search_with_score(query=user_query,k=4)
     if not search_result or search_result[0][1]<0.3:
       return {
-            "response_from": "Rag_AI_Agent",
+            "response_from": "assistant",
             "response": "The information is not available in the provided document."
         }
 

@@ -1,15 +1,15 @@
-import { useEffect, useRef, useState, type ChangeEvent } from 'react';
+import { useEffect, useRef, useState, type ChangeEvent, type Dispatch, type SetStateAction } from 'react';
 import { Card } from './ui/card';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
 import { Progress } from './ui/progress';
 import { useNavigate } from 'react-router-dom';
-// type UploadDocumentFormProps = {
-  
-//   setShowUpload: Dispatch<SetStateAction<boolean>>;
-// };
+type UploadDocumentFormProps = {
+  user: string;
+  setRefreshSideBar: Dispatch<SetStateAction<boolean>>;
+};
 
-export default function UploadDocuemtForm() {
+export default function UploadDocuemtForm({user, setRefreshSideBar}: UploadDocumentFormProps) {
   const navigate = useNavigate();
   const [file, setFile] = useState<File | null>(null);
   const [jobId, setJobId] = useState<string | null>(null);
@@ -70,6 +70,7 @@ export default function UploadDocuemtForm() {
             setCollection_name(null);
             setJobId(null);
             setUploading(false);
+            setRefreshSideBar(true);
             navigate(`/chat?collection_name=${collection_name}`);
 
             // setShowUpload(false)
@@ -109,6 +110,7 @@ export default function UploadDocuemtForm() {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('collection_name', collection_name);
+    formData.append('userId', user);
     try {
       const res = await fetch('http://localhost:8080/upload-document', {
         method: 'POST',
@@ -117,7 +119,7 @@ export default function UploadDocuemtForm() {
       const response = await res.json();
       if (res.status !== 200) {
         setUploading(false);
-        return setUploadDocumentError(response.detail);
+        return setUploadDocumentError(response.detail|| response.detail.message || 'Unable to Upload the docuemnt!');
       }
       setJobId(response.job_id);
       setProgress(30);
