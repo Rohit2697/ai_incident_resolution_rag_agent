@@ -18,5 +18,8 @@ env_veriables = {
     },
     "REDIS":{
         "url":os.getenv("REDIS_URL")
+    },
+    "FRONTEND":{
+        "url":os.getenv("FRONTEND_URL")
     }
 }
