@@ -2,6 +2,14 @@ from urllib.parse import quote_plus
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from app.environment.environment import env_veriables
+
+
+print("Mongo config check:", {
+    "username_present": bool(env_veriables["MONGO_DB"]["username"]),
+    "password_present": bool(env_veriables["MONGO_DB"]["password"]),
+    "host": env_veriables["MONGO_DB"]["host"],
+})
+
 usename=quote_plus(env_veriables["MONGO_DB"]["username"])
 password=quote_plus(env_veriables["MONGO_DB"]["password"]) 
 host=env_veriables["MONGO_DB"]["host"]
