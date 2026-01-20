@@ -17,6 +17,7 @@ def chat_worker(query:str,collection_name:str,userId)->ChatResponse:
        if not check_if_user_has_collection:
           return {   
             "ok": False,
+            "context":"chat_worker",
             "error_code": "COLLECTION_NOT_INDEXED",
             "message": "Collection not indexed yet. Please upload documents first.",
             "data": None
@@ -26,6 +27,7 @@ def chat_worker(query:str,collection_name:str,userId)->ChatResponse:
        if(save_user_result["error"]):
           return {   
             "ok": False,
+            "context":"chat_worker",
             "error_code": "UNABLE_TO_SAVE_INTO_DB",
             "message": save_user_result["message"],
             "data": None
@@ -35,12 +37,14 @@ def chat_worker(query:str,collection_name:str,userId)->ChatResponse:
        if(save_assistant_result["error"]):
             return {   
             "ok": False,
+            "context":"chat_worker",
             "error_code": "UNABLE_TO_SAVE_INTO_DB",
             "message": save_assistant_result["message"],
             "data": None
         }
        return {   
             "ok": True,
+            "context":"chat_worker",
             "error_code": None,
             "message": "chat response",
             "data": result
@@ -48,6 +52,7 @@ def chat_worker(query:str,collection_name:str,userId)->ChatResponse:
     except UnexpectedResponse:
        return {   
             "ok": False,
+            "context":"chat_worker",
             "error_code": "NO_DOCUMENT_INDEXED",
             "message": "No documents indexed yet for this collection. Please upload documents first.",
             "data": None
@@ -55,6 +60,7 @@ def chat_worker(query:str,collection_name:str,userId)->ChatResponse:
     except Exception as e:
          return {   
                 "ok": False,
+                "context":"chat_worker",
                 "error_code": "CHAT_WORKER_FAILED",
                 "message": str(e),
                 "data": None
@@ -70,12 +76,14 @@ def retriieve_chats_worker(userId:str,collection_name:str):
     if(chat_history["error"]):
         return {   
                "ok": False,
+               "context":"chat_history_worker",
                "error_code": "RETRIEVE_CHAT_FAILED",
                "message": chat_history["message"],
                "data": []
          }
     return {   
                "ok": True,
+                "context":"chat_history_worker",
                "error_code": None,
                "message": "chat history retrieved",
                "data": chat_history["data"]
@@ -83,6 +91,7 @@ def retriieve_chats_worker(userId:str,collection_name:str):
    except Exception as e:
         return {   
                "ok": False,
+                "context":"chat_history_worker",
                "error_code": "RETRIEVE_CHAT_FAILED",
                "message": str(e),
                "data": []

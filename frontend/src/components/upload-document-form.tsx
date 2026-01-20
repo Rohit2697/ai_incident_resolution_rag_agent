@@ -4,6 +4,7 @@ import { Input } from './ui/input';
 import { Button } from './ui/button';
 import { Progress } from './ui/progress';
 import { useNavigate } from 'react-router-dom';
+import { api_base } from '@/lib/api';
 type UploadDocumentFormProps = {
   user: string;
   setRefreshSideBar: Dispatch<SetStateAction<boolean>>;
@@ -39,7 +40,7 @@ export default function UploadDocuemtForm({user, setRefreshSideBar}: UploadDocum
       setUploadDocumentError('');
       try {
         const res = await fetch(
-          `http://localhost:8080/upload-docs-worker-result/${jobId}`,
+          `${api_base}/upload-docs-worker-result/${jobId}`,
           {
             method: 'GET',
           }
@@ -112,7 +113,7 @@ export default function UploadDocuemtForm({user, setRefreshSideBar}: UploadDocum
     formData.append('collection_name', collection_name);
     formData.append('userId', user);
     try {
-      const res = await fetch('http://localhost:8080/upload-document', {
+      const res = await fetch(`${api_base}/upload-document`, {
         method: 'POST',
         body: formData,
       });

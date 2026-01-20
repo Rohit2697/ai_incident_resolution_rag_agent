@@ -7,7 +7,7 @@ import Navbar from './components/navbar';
 import { ThemeProvider } from './components/theme-provider';
 import Sidebar from './components/sidebar';
 import { useState } from 'react';
-
+import About from './pages/About';
 function App() {
   // const [uploading, setUploading] = useState(true);
   const [menuOpen, setMenuOpen] = useState(true);
@@ -38,7 +38,9 @@ function App() {
             <Routes>
               <Route path="/" element={<UploadDocumentPage setRefreshSideBar={setRefreshSideBar} user={user} />} />
               <Route path="/chat" element={<ChatPage />} />
+               <Route path="/about" element={<About />} />
               <Route path="*" element={<Navigate to="/" replace />} />
+             
             </Routes>
           </main>
         </div>

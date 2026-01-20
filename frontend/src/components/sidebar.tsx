@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { useEffect, useState, type Dispatch, type SetStateAction } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SidebarSkeleton from './skeleton/sidebar-skeleton';
+import { api_base } from '@/lib/api';
 type SidebarProps = {
   user: string;
   refreshSideBar: boolean;
@@ -28,7 +29,7 @@ export default function Sidebar({
     const refresh = async () => {
       try {
         setFetching(true);
-        const call_collection = await fetch(`http://localhost:8080/collections/${user}`);
+        const call_collection = await fetch(`${api_base}/collections/${user}`);
         if (call_collection.status !== 200) {
           const errorResponse = await call_collection.json();
           throw new Error(
@@ -52,7 +53,7 @@ export default function Sidebar({
     const interval = setInterval(async () => {
       try {
         setFetching(true);
-        const status_response = await fetch(`http://localhost:8080/collections-result/${job_id}`);
+        const status_response = await fetch(`${api_base}/collections-result/${job_id}`);
         if (status_response.status !== 200) {
           const errorResponse = await status_response.json();
           throw new Error(

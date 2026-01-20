@@ -87,16 +87,38 @@ def save_chat_messages(user_id:str, collection_name:str, role:str,content:str):
 
 def get_chat_history(userId:str,collection_name:str):
     try:
-       
-        doc=chat_collection.find_one(
+        pipeline = [
             {
-                "userId":userId,
-                "collection_name":collection_name
+                "$match": {
+                    "userId": userId,
+                    "collection_name": collection_name
+                }
             },
-            {"_id":0}
-        )
-        if doc:
             {
+                "$unwind": "$messages"
+            },
+            {
+                "$sort": {
+                    "messages.timestamp": 1 
+                }
+            },
+            {
+                "$group": {
+                    "_id": None,
+                    "messages": { "$push": "$messages" }
+                }
+            },
+            {
+                "$project": {
+                    "_id": 0,
+                    "messages": 1
+                }
+            }
+        ]
+        result = list(chat_collection.aggregate(pipeline))
+        if result:
+            doc = result[0]
+            return {
           "error":False,
           "message":"chat retrieved from DB",
           "data":doc["messages"]

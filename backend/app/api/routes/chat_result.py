@@ -12,6 +12,7 @@ def chat_result(job_id:str):
         if job.result.get("ok"):
             return {
                 "message": "finished",
+                "context": job.result.get("context"),
                 "result": job.result
             }
         else:
