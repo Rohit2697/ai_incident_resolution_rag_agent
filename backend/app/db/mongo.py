@@ -16,6 +16,7 @@ host=env_veriables["MONGO_DB"]["host"]
 app_name=env_veriables["MONGO_DB"]["app_name"] 
    
 uri = f"mongodb+srv://{usename}:{password}@{host}/?appName={app_name}"
+print("MongoDB URI:", uri)
 
 # Create a new client and connect to the server
 client = MongoClient(uri, server_api=ServerApi('1'))
