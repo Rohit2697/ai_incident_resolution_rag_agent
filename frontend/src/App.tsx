@@ -10,10 +10,10 @@ import { useState } from 'react';
 import About from './pages/About';
 function App() {
   // const [uploading, setUploading] = useState(true);
-  const [menuOpen, setMenuOpen] = useState(true);
+  const [menuOpen, setMenuOpen] = useState(window.innerWidth > 1024);
   const [refreshSideBar, setRefreshSideBar] = useState(true);
   const [collections, setCollections] = useState<string[]>([]);
-  const user='admin'
+  const user = 'admin';
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <div className="h-screen overflow-hidden flex flex-col">
@@ -25,9 +25,9 @@ function App() {
           {/* Sidebar */}
           {menuOpen && (
             <Sidebar
-            user={user}
-            collections={collections}
-            setCollections={setCollections}
+              user={user}
+              collections={collections}
+              setCollections={setCollections}
               refreshSideBar={refreshSideBar}
               setRefreshSideBar={setRefreshSideBar}
             />
@@ -36,11 +36,18 @@ function App() {
           {/* Main area */}
           <main className="flex-1 overflow-hidden">
             <Routes>
-              <Route path="/" element={<UploadDocumentPage setRefreshSideBar={setRefreshSideBar} user={user} />} />
+              <Route
+                path="/"
+                element={
+                  <UploadDocumentPage
+                    setRefreshSideBar={setRefreshSideBar}
+                    user={user}
+                  />
+                }
+              />
               <Route path="/chat" element={<ChatPage />} />
-               <Route path="/about" element={<About />} />
+              <Route path="/about" element={<About />} />
               <Route path="*" element={<Navigate to="/" replace />} />
-             
             </Routes>
           </main>
         </div>
